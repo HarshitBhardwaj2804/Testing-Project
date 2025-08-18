@@ -4,16 +4,15 @@ from dotenv import load_dotenv
 from langchain_groq import ChatGroq
 from langchain_core.prompts import ChatPromptTemplate
 from langchain_core.output_parsers import StrOutputParser
-
 from src.utils import NamedJSONChatMessageHistory
 from langchain_core.prompts import ChatPromptTemplate, MessagesPlaceholder
 from langchain_core.runnables.history import RunnableWithMessageHistory
-
-from extensions.search_engine import TavilyAgent
-
+from extensions.search_engine import TavilyAgent, TavilyAgentwithHistory
 from datetime import datetime
 import random, string
 import json
+
+#0 #Setting up the enviroment
 load_dotenv()
 
 ## Setting-Up Langchain-tracing.
@@ -21,11 +20,15 @@ os.environ["LANGCHAIN_API_KEY"] = os.getenv("LANGCHAIN_API_KEY")
 os.environ["LANGCHAIN_TRACING_V2"] = "true"
 os.environ["LANGCHAIN_PROJECT"] = "CARL"
 
+## Setting up the GROQ API KEY
 groq_api_key = os.getenv("GROQ_API_KEY_MAIN_PROJECT")
 
 prompt = ChatPromptTemplate(
     [
-        ("system", ("You are CARL, an excellent assistant. Your task is to help your master as best you can in his/her questions.")),
+        ("system", ("You are CARL, an excellent assistant. Your task is to help your master as best you can in his/her questions. \n"
+        "You have to answer in a way define in the custom instruction given by the user. If the value of instructions \n"
+        "is None/Null then you just have to answer in a manner just like you did by default. \n"
+        "{instructions}")),
         MessagesPlaceholder(variable_name="history"),
         ("user", "{question}")
     ]
@@ -59,12 +62,13 @@ def index():
 
 @app.route("/send_message", methods=["POST"])
 def send_message():
+    instructions = None
     user_message = request.json.get("message")
     webSearchFlag = request.json.get("webSearchFlag")
     session_id = request.json.get("session_id")
 
     if webSearchFlag == 1:
-        search_agent = TavilyAgent()
+        search_agent = TavilyAgentwithHistory()
         
         # response = search_agent.run(user_message)
         agent_with_history = RunnableWithMessageHistory(
@@ -80,31 +84,12 @@ def send_message():
         return jsonify({"reply": response["output"]})
     else:
         response = message_chain.invoke(
-        {"question": user_message},
+        {"question": user_message,
+         "instructions" : instructions},
         config={"configurable": {"session_id": session_id}}
         )
         
         return jsonify({"reply": response.content})
-
-@app.route("/extensions")
-def extensions():
-    return render_template("extensions.html")
-
-@app.route("/load_chat/<session_id>")
-def load_chat(session_id):
-    return render_template("index.html", session_id=session_id)
-
-@app.route("/get_previous_messages/<session_id>")
-def get_previous_messages(session_id):
-    file_path = "chat_sessions_test.json"
-    if not os.path.exists(file_path):
-        return jsonify([])
-
-    with open(file_path, "r") as f:
-        all_data = json.load(f)
-
-    messages = all_data.get(session_id, [])
-    return jsonify(messages)
 
 @app.route("/history")
 def history():
@@ -150,9 +135,49 @@ def history():
 
     return render_template("history.html", sessions=sessions)
 
+@app.route("/load_chat/<session_id>")
+def load_chat(session_id):
+    return render_template("index.html", session_id=session_id)
+
+@app.route("/get_previous_messages/<session_id>")
+def get_previous_messages(session_id):
+    file_path = "chat_sessions_test.json"
+    if not os.path.exists(file_path):
+        return jsonify([])
+
+    with open(file_path, "r") as f:
+        all_data = json.load(f)
+
+    messages = all_data.get(session_id, [])
+    return jsonify(messages)
+
+@app.route("/extensions")
+def extensions():
+    return render_template("extensions.html")
+
+## Extension-1: WEB SEARCH
+@app.route("/search_engine")
+def search_engine():
+    return render_template("search_engine.html")
+
+@app.route("/webSearch", methods=["POST"])
+def webSearch():
+    user_message = request.json.get("message")
+
+    web_agent = TavilyAgent()
+    executor = web_agent.executor
+    response = executor.invoke({"question" : user_message})
+
+    return jsonify({"reply" : response["output"]})
+
+## EXTENSION-2: RAG PDF CHATBOT
+@app.route("/PDF_Chatbot")
+def pdf_chatbot():
+    return render_template("pdf_chatbot.html")
+
 @app.route("/settings")
 def settings():
     return render_template("settings.html")
 
 if __name__ == "__main__":
-    app.run(debug=True, host = "0.0.0.0")
+    app.run(debug=True)

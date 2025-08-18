@@ -40,14 +40,18 @@
 
         <!--Extension Grid-->
         <div class="extensions-grid">
-          <div class="extension-card">
-            <img src="{{ url_for('static', filename='images/tool1.png') }}" alt="Tool 1">
-            <div class="extension-name">Tool 1</div>
-          </div>
-          <div class="extension-card">
-            <img src="{{ url_for('static', filename='images/tool2.png') }}" alt="Tool 2">
-            <div class="extension-name">Tool 2</div>
-          </div>
+          <a href="/search_engine">
+            <div class="extension-card">
+              <img src="{{ url_for('static', filename='images/tool1.png') }}" alt="Tool 1">
+              <div class="extension-name">Search Engine</div>
+            </div>
+          </a>
+          <a href="/PDF_Chatbot">
+            <div class="extension-card">
+              <img src="{{ url_for('static', filename='images/tool2c.png') }}" alt="Tool 2">
+              <div class="extension-name">PDF ChatBot</div>
+            </div>
+          </a>
           <div class="extension-card">
             <img src="{{ url_for('static', filename='images/tool3.png') }}" alt="Tool 3">
             <div class="extension-name">Tool 3</div>
@@ -69,7 +73,7 @@
     </div>
   </div>
   <script>
-     function goToPage(route) {
+    function goToPage(route) {
       window.location.href = route;
     }
     document.querySelector('.hamburger').addEventListener('click', () => {
