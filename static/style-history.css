@@ -116,7 +116,7 @@ body {
 
 /* Header */
 .chat-header {
-  padding: 20px 30px;
+  padding: 10px 30px;
   background-color: #ffffff;
   border-bottom: 1px solid #838486;
   box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
@@ -440,9 +440,12 @@ body {
   }
 
   .button-container {
+    display: flex;
     flex-direction: row;
-    flex-wrap: wrap;
-    justify-content: flex-start;
+    flex-wrap: nowrap;
+    /* prevent wrapping */
+    justify-content: space-between;
+    /* spread them out */
     gap: 8px;
     margin-left: 10px;
   }
@@ -450,10 +453,11 @@ body {
   .button-container button,
   .button-container a button {
     flex: 1 1 auto;
-    min-width: 100px;
+    min-width: 0;
     font-size: 13px;
     padding: 8px 10px;
-    white-space: nowrap; /* Prevents button text from breaking into multiple lines */
+    white-space: nowrap;
+    /* Prevents button text from breaking into multiple lines */
   }
 
   .sidebar .sidebar-settings li {

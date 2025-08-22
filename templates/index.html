@@ -48,7 +48,8 @@
           <button id="web-search-btn" onclick="enableWebSearch()" class="web-search-btn">
             Web Search
 
-            <span id="cancel-search" onclick="disableWebSearch(event)" class="cancel-cross" style="display: none;">✖</span>
+            <span id="cancel-search" onclick="disableWebSearch(event)" class="cancel-cross"
+              style="display: none;">✖</span>
           </button>
         </div>
       </div>
@@ -190,6 +191,43 @@
     textarea.addEventListener('input', () => {
       textarea.style.height = 'auto';
       textarea.style.height = textarea.scrollHeight + 'px';
+    });
+
+
+    const chatBox = document.getElementById('chat-box');
+    const inputArea = document.querySelector('.input-area');
+
+    function syncChatPadding() {
+      // Add small buffer so last message isn't glued to the input
+      const h = inputArea.offsetHeight || 0;
+      chatBox.style.paddingBottom = (h + 20) + 'px';
+    }
+
+    // Clamp textarea height and allow internal scroll
+    textarea.addEventListener('input', () => {
+      textarea.style.height = 'auto';
+      const max = 150;
+      const next = Math.min(textarea.scrollHeight, max);
+      textarea.style.height = next + 'px';
+      textarea.style.overflowY = textarea.scrollHeight > max ? 'auto' : 'hidden';
+      syncChatPadding();
+    });
+
+    // After sending, collapse to one line
+    const _origSend = sendMessage;
+    sendMessage = async function () {
+      await _origSend();
+      textarea.value = '';
+      textarea.style.height = '40px';
+      textarea.style.overflowY = 'hidden';
+      syncChatPadding();
+    }
+
+    window.addEventListener('resize', syncChatPadding);
+    window.addEventListener('DOMContentLoaded', syncChatPadding);
+
+    document.getElementById("user-input").addEventListener("keydown", e => {
+      if (e.key === "Enter") sendMessage();
     });
 
   </script>

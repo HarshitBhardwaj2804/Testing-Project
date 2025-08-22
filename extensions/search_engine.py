@@ -11,7 +11,7 @@ groq_api_key = os.getenv("GROQ_API_KEY_MAIN_PROJECT")
 tavily_api_key = os.getenv("TAVILY_API_KEY")
 
 class TavilyAgentwithHistory:
-    def __init__(self, model: str = "openai/gpt-oss-20b"):
+    def __init__(self, model: str = "llama-3.1-8b-instant"):
         self.llm = ChatGroq(model=model, groq_api_key=groq_api_key, temperature=0.3)
 
         # Tools

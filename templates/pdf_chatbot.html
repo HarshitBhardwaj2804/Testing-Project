@@ -5,7 +5,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Settings</title>
-    <link rel="stylesheet" href="{{ url_for('static', filename='style-settings.css') }}" />
+    <link rel="stylesheet" href="{{ url_for('static', filename='style-pdfchatbot.css') }}" />
     <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
 </head>
 
@@ -32,10 +32,43 @@
                     <h1>CARL AI</h1>
                 </header>
             </div>
-            <div class="pdfchatbot-box" id="pdfchatbot-box">
-                <!-- Messages will appear here -->
-                 <h1>Development In Progress!</h1>
+            <!-- <div class="pdfchatbot-box" id="pdfchatbot-box"> -->
+            <!-- Messages will appear here -->
+            <!-- <h1>Development In Progress!</h1> -->
+            <div class="chat-container">
+                <!-- Chat area (middle) -->
+                <div class="chat-main">
+                    <div class="chat-pdftitle">PDF: No file uploaded</div>
+                    <div class="chat-messages">
+                        <!-- Chat bubbles go here -->
+                        <div class="message user">Hello, can you summarize this PDF?</div>
+                        <div class="message bot">Please upload a PDF to get started.</div>
+                    </div>
+                    <div class="chat-input">
+                        <input type="text" placeholder="Ask something about the PDF..." />
+                        <button>Send</button>
+                    </div>
+                </div>
+
+                <!-- Right PDF tools sidebar -->
+                <div class="pdf-sidebar">
+                    <button class="upload-btn">📄 Upload PDF</button>
+                    <button class="process-btn">⚡ Process Embeddings</button>
+
+                    <hr />
+
+                    <div class="pdf-history">
+                        <h4>Previous Chats</h4>
+                        <ul>
+                            <li>report1.pdf</li>
+                            <li>contract2025.pdf</li>
+                            <li>research_notes.pdf</li>
+                        </ul>
+                    </div>
+                </div>
             </div>
+
+            <!-- </div> -->
         </div>
     </div>
 

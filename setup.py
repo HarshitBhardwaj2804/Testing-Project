@@ -19,7 +19,7 @@ def get_requirements(file_path:str)->List[str]:
 
 setup(
     name = "CARL",
-    version = "0.0.1",
+    version = "0.2.7",
     author = "Harshit",
     author_email= "hb28042004@gmail.com",
     packages=find_packages(),

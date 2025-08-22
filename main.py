@@ -34,7 +34,7 @@ prompt = ChatPromptTemplate(
     ]
 )
 
-llm = ChatGroq(model="openai/gpt-oss-20b", groq_api_key=groq_api_key)
+llm = ChatGroq(model="openai/gpt-oss-120b", groq_api_key=groq_api_key)
 chain = prompt | llm
 
 def get_session_history(session_id: str):
@@ -150,6 +150,30 @@ def get_previous_messages(session_id):
 
     messages = all_data.get(session_id, [])
     return jsonify(messages)
+
+@app.route("/delete_chat/<session_id>", methods=["DELETE"])
+def delete_chat(session_id):
+    file_path = "chat_sessions_test.json"
+    if not os.path.exists(file_path):
+        return jsonify({"success": False, "error": "File not found"}), 404
+
+    try:
+        with open(file_path, "r") as f:
+            all_data = json.load(f)
+
+        if session_id not in all_data:
+            return jsonify({"success": False, "error": "Session not found"}), 404
+
+        # Remove the session
+        del all_data[session_id]
+
+        with open(file_path, "w") as f:
+            json.dump(all_data, f, indent=2)
+
+        return jsonify({"success": True})
+    except Exception as e:
+        return jsonify({"success": False, "error": str(e)}), 500
+
 
 @app.route("/extensions")
 def extensions():
